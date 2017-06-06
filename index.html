@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="MathBirthdays">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>MATHBIRTHDAYS</title>
+
+    <!-- Bootstrap -->
+    <!--<link href="frameworks/bootstrap/css/bootstrap.min.css" rel="stylesheet">-->
+    <!--<link href="frameworks/bootstrap/css/bootstrap-datepicker.min.css" rel="stylesheet">-->
+
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/css/bootstrap-datepicker3.standalone.min.css" rel="stylesheet">
+
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+    <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <style>
+        .title h1{
+            text-align: center;
+            font-size: 22px;
+            font-weight: 800;
+            color: #555;
+        }
+
+        .info h3, .result h3{
+            text-align: center;
+            font-size: 18px;
+            font-weight: 300;
+            color: #555;
+        }
+    </style>
+</head>
+<body ng-controller="MainCtrl as vm">
+
+<div class="container">
+    <div class="row title">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <h1>Welcome to the Math birthdays calculator!</h1>
+        </div>
+    </div>
+
+    <div class="row info">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <h3>Please select your birth date</h3>
+        </div>
+    </div>
+
+    <div class="row date-picker">
+        <div class="col-lg-8 col-lg-offset-2 col-md-8 col-md-offset-2 col-sm-8 col-sm-offset-2 col-xs-12">
+            <div class="input-group date" data-provide="datepicker" data-date-end-date="0d">
+                <input type="text" class="form-control"
+                       data-ng-change="vm.dateChanged()"
+                       data-ng-model="vm.birthDate">
+                <div class="input-group-addon">
+                    <span class="glyphicon glyphicon-th"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="row result">
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+            <h3 data-ng-show="vm.birthDate" data-ng-bind-html="vm.textResult"></h3>
+        </div>
+    </div>
+</div>
+
+
+<!--<script src="frameworks/jquery/jquery-2.1.4.min.js"></script>-->
+<!--<script src="frameworks/bootstrap/js/bootstrap.min.js"></script>-->
+<!--<script src="frameworks/bootstrap/js/bootstrap-datepicker.min.js"></script>-->
+<!--<script src="frameworks/moment/moment-with-locales.min.js"></script>-->
+<!--<script src="frameworks/angularjs/angular.min.js"></script>-->
+<!--<script src="frameworks/angularjs/angular-route.min.js"></script>-->
+<!--<script src="frameworks/angularjs/angular-sanitize.min.js"></script>-->
+
+<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://code.jquery.com/jquery-2.2.4.min.js" integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44=" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.6.4/js/bootstrap-datepicker.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.1/angular.min.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.1/angular-route.min.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.1/angular-sanitize.js" type="text/javascript"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.6.1/angular-touch.min.js"></script>
+<!-- js files -->
+<script type="text/javascript" >
+    angular
+            .module('MathBirthdays', ['ngRoute', 'ngSanitize'])
+            .config(function($routeProvider) {
+                //configuración y definición de las rutas
+                $routeProvider
+                        .when("/", {
+                            controller: "MainCtrl",
+                            controllerAs: "vm"
+                        })
+                        .otherwise({
+                            redirectTo: '/'
+                        });
+            })
+            .controller("MainCtrl", function(){
+                var vm = this;
+
+                vm.birthDate = '';
+                vm.nextMathDateText = '';
+
+                vm.dateChanged = function () {
+                    var bd = moment( vm.birthDate,'MM/DD/YYYY', true),
+                        now = moment(),
+                        diffDays = now.diff(bd, 'days'),
+                        expNextMDB =  vm.getNextMathBD(diffDays, 1),
+                        nextMathDate = bd.add(expNextMDB, 'days');
+
+                    vm.nextMathDateText = moment().to(nextMathDate);
+                    vm.textResult = vm.nextMathDateText
+                            ? 'Your next math birthday is ' + vm.nextMathDateText
+                            : 'Invalid Date, please select a new date.';
+                    console.log(vm.textResult);
+                };
+
+                vm.getNextMathBD = function (diffDays, exp) {
+                    var days = 0;
+                  while(days < diffDays) {
+                      days = Math.pow(10, exp++);
+                  }
+                    return days;
+                };
+
+                angular.element('.date-picker .input-group.date').datepicker({
+                    calendarWeeks: true,
+                    autoclose: true,
+                    todayHighlight: true
+                });
+            });
+
+</script>
+</body>
+</html>
